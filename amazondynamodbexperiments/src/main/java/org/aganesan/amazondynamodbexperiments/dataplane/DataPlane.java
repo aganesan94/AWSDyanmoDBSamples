@@ -26,9 +26,9 @@ import com.amazonaws.services.dynamodbv2.document.Table;
  * @author agane
  *
  */
-public class InsertItem extends BaseItem {
+public class DataPlane extends BaseItem {
 
-	public InsertItem() {
+	public DataPlane() {
 		super();
 	}
 
