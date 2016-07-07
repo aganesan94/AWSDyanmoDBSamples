@@ -1,9 +1,10 @@
-package org.aganesan.amazondynamodbexperiments;
+package org.aganesan.amazondynamodbexperiments.createplane;
 
 import java.util.Iterator;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.junit.Test;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.auth.AWSCredentials;
@@ -31,13 +32,14 @@ import com.amazonaws.services.dynamodbv2.model.TableDescription;
  */
 public class CreatePlane {
 
-	static DynamoDB dynamoDB = null;
+	protected DynamoDB dynamoDB = null;
 
-	static String tableName = "cars";
+	protected String tableName = "cars";
 
-	private static Logger logger = LogManager.getLogger(CreatePlane.class);
+	protected Logger logger = LogManager.getLogger(CreatePlane.class);
 
-	public static void main(String args[]) {
+	@Test
+	public void execute(){
 		logger.debug("Demonstrating the create plane");
 		init();
 		createTable();
@@ -51,7 +53,7 @@ public class CreatePlane {
 	/**
 	 * Updates Provisioned throughput of the table
 	 */
-	private static void updateTable() {
+	private void updateTable() {
 		Table table = dynamoDB.getTable(tableName);
 		ProvisionedThroughput provisionedThroughput = new ProvisionedThroughput().withReadCapacityUnits(15L)
 				.withWriteCapacityUnits(12L);
@@ -62,7 +64,7 @@ public class CreatePlane {
 	/**
 	 * list all tables
 	 */
-	private static void listAllTables() {
+	private void listAllTables() {
 		TableCollection<ListTablesResult> tables = dynamoDB.listTables();
 		Iterator<Table> iterator = tables.iterator();
 
@@ -75,7 +77,7 @@ public class CreatePlane {
 	/**
 	 * Delete table
 	 */
-	private static void deleteTable() {
+	private void deleteTable() {
 		Table table = dynamoDB.getTable(tableName);
 		table.delete();
 		try {
@@ -87,7 +89,7 @@ public class CreatePlane {
 	}
 
 	// describes a table
-	private static void describeTable() {
+	private void describeTable() {
 		TableDescription tableDescription = dynamoDB.getTable(tableName).describe();
 		logger.debug("Table Description: {}", tableDescription);
 
@@ -98,7 +100,7 @@ public class CreatePlane {
 	 * 
 	 * @param dbClient
 	 */
-	private static void createTable() {
+	private void createTable() {
 
 		// Uses the builder pattern
 		// -http://minborgsjavapot.blogspot.com/2014/08/creating-objects-using-builder-pattern.html
@@ -124,7 +126,7 @@ public class CreatePlane {
 		logger.debug("Table created successfully with tablename {}", tableName);
 	}
 
-	private static void init() {
+	private void init() {
 
 		AWSCredentials credentials = null;
 		try {
