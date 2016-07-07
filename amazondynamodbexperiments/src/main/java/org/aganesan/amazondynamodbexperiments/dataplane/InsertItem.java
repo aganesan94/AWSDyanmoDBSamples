@@ -26,13 +26,14 @@ import com.amazonaws.services.dynamodbv2.document.Table;
  * @author agane
  *
  */
-public class DataPlane extends BaseItem {
+public class InsertItem extends BaseItem {
 
-	public DataPlane() {
+	public InsertItem() {
 		super();
 	}
 
 	@Test
+	// Simple insert item
 	public void case1() {
 
 		// Person -> firstname, lastname, age, male/female?, spouseName
