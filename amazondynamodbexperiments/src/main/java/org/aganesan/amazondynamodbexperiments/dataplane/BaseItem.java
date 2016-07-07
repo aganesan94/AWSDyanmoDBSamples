@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.amazonaws.AmazonClientException;
+import com.amazonaws.AmazonServiceException;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.profile.ProfileCredentialsProvider;
 import com.amazonaws.regions.Region;
@@ -104,6 +105,37 @@ public abstract class BaseItem {
 
 		dynamoDB = new DynamoDB(dynamoDBClient);
 
+	}
+
+	/**
+	 * Exceptions are defined in the following URL with the reasoning as to why
+	 * we get certain exceptions:
+	 * 
+	 * http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/
+	 * Programming.Errors.html
+	 * 
+	 * @param e
+	 */
+	protected void printStackTrace(Exception e) {
+
+		if (e instanceof AmazonServiceException) {
+			AmazonServiceException ase = (AmazonServiceException) e;
+			logger.error("Could not complete operation");
+			logger.error("Error Message:  " + ase.getMessage());
+			logger.error("HTTP Status:    " + ase.getStatusCode());
+			logger.error("AWS Error Code: " + ase.getErrorCode());
+			logger.error("Error Type:     " + ase.getErrorType());
+			logger.error("Request ID:     " + ase.getRequestId());
+			logger.error("Refer exceptions at http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Programming.Errors.html ");
+
+		} else if (e instanceof AmazonClientException) {
+			AmazonClientException ase = (AmazonClientException) e;
+			logger.error("Internal error occured communicating with DynamoDB");
+			logger.error("Error Message:  ", ase);
+			logger.error("Refer exceptions at http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Programming.Errors.html ");
+		} else {
+			logger.error("Exception : ", e);
+		}
 	}
 
 }
