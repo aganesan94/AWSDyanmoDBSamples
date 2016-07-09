@@ -149,4 +149,34 @@ public class UpdateItem extends BaseItem {
 		}
 	}
 
+	@Test
+	/**
+	 * Atomic writes. Concurrency sample explaining how we can deal with RACE
+	 * conditions (multiple threads writing to the same item in a collection)
+	 * and guaranteeing consistency.
+	 * 
+	 * Note age is incremented by 10 years only if the condition is met. The
+	 * condition expression is a way of ensuring or guaranteeing that we take
+	 * care of RACE condition.
+	 */
+	public void case5() {
+		try {
+			Table table = dynamoDB.getTable(tableName);
+
+			Map<String, String> expressionAttributeNames = new HashMap<String, String>();
+			expressionAttributeNames.put("#age", "age");
+
+			Map<String, Object> expressionAttributeValues = new HashMap<String, Object>();
+			expressionAttributeValues.put(":val1", 55);
+			expressionAttributeValues.put(":val2", 10);
+
+			UpdateItemOutcome outcome = table.updateItem("personId", // key
+					1, // key attribute value
+					"set #age = #age + :val2 ", // UpdateExpression
+					"#age =  :val1", // conditionexpression
+					expressionAttributeNames, expressionAttributeValues);
+		} catch (Exception e) {
+			printStackTrace(e);
+		}
+	}
 }
