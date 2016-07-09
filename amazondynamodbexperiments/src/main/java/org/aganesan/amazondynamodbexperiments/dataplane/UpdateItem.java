@@ -37,7 +37,7 @@ public class UpdateItem extends BaseItem {
 		// Goal
 		// 1. Update first Name to Mary
 		// 2. Remove attribute colorPencils
-		// 3. Add attribute books. (Note it 
+		// 3. Add attribute books. (Note it
 
 		try {
 			Table table = dynamoDB.getTable(tableName);
@@ -46,13 +46,13 @@ public class UpdateItem extends BaseItem {
 			expressionAttributeNames.put("#fName", "firstName");
 			expressionAttributeNames.put("#colorPencils", "colorPencils");
 			expressionAttributeNames.put("#books", "books");
-			
+
 			List<String> books = Arrays.asList("Alice in wonderland", "Famous Five", "Autobiography of a Yogi");
-			
+
 			Map<String, Object> expressionAttributeValues = new HashMap<String, Object>();
 			expressionAttributeValues.put(":val1", "Mary");
 			expressionAttributeValues.put(":val2", new HashSet<String>(books)); // Price
-			
+
 			UpdateItemOutcome outcome = table.updateItem("personId", // key
 																		// attribute
 																		// name
@@ -65,6 +65,9 @@ public class UpdateItem extends BaseItem {
 	}
 
 	@Test
+	/**
+	 * Add remove or update attributes based on a primary key.
+	 */
 	public void case2() {
 
 		try {
@@ -74,10 +77,10 @@ public class UpdateItem extends BaseItem {
 			expressionAttributeNames.put("#fName", "firstName");
 			expressionAttributeNames.put("#colorPencils", "colorPencils");
 			expressionAttributeNames.put("#books", "books");
-			
+
 			Map<String, Object> expressionAttributeValues = new HashMap<String, Object>();
 			expressionAttributeValues.put(":val1", "Gary");
-			expressionAttributeValues.put(":val2",new HashSet<String>(Arrays.asList("Red", "Green", "Blue"))); // Price
+			expressionAttributeValues.put(":val2", new HashSet<String>(Arrays.asList("Red", "Green", "Blue"))); // Price
 
 			UpdateItemOutcome outcome = table.updateItem("personId", // key
 																		// attribute
@@ -89,5 +92,61 @@ public class UpdateItem extends BaseItem {
 			printStackTrace(e);
 		}
 	}
-	
+
+	/**
+	 * Revert it back to original state so as to execute case 2
+	 */
+	@Test
+	public void case3() {
+		try {
+			Table table = dynamoDB.getTable(tableName);
+
+			Map<String, String> expressionAttributeNames = new HashMap<String, String>();
+			expressionAttributeNames.put("#fName", "firstName");
+			expressionAttributeNames.put("#colorPencils", "colorPencils");
+			expressionAttributeNames.put("#books", "books");
+
+			Map<String, Object> expressionAttributeValues = new HashMap<String, Object>();
+			expressionAttributeValues.put(":val1", "Gary");
+			expressionAttributeValues.put(":val2", new HashSet<String>(Arrays.asList("Red", "Green", "Blue"))); // Price
+
+			UpdateItemOutcome outcome = table.updateItem("personId", // key
+																		// attribute
+																		// name
+					1, // key attribute value
+					"set #fName = :val1 remove #books add #colorPencils :val2", // UpdateExpression
+					expressionAttributeNames, expressionAttributeValues);
+		} catch (Exception e) {
+			printStackTrace(e);
+		}
+	}
+
+	@Test
+	/***
+	 * Demonstrates executing an update only if there is a condition.
+	 * 
+	 * update table fname with Mary only if the fname is Gary.
+	 * 
+	 */
+	public void case4() {
+		try {
+			Table table = dynamoDB.getTable(tableName);
+
+			Map<String, String> expressionAttributeNames = new HashMap<String, String>();
+			expressionAttributeNames.put("#age", "age");
+
+			Map<String, Object> expressionAttributeValues = new HashMap<String, Object>();
+			expressionAttributeValues.put(":val1", 55);
+			expressionAttributeValues.put(":val2", 45);
+
+			UpdateItemOutcome outcome = table.updateItem("personId", // key
+					1, // key attribute value
+					"set #age = :val1 ", // UpdateExpression
+					"#age =  :val2", // conditionexpression
+					expressionAttributeNames, expressionAttributeValues);
+		} catch (Exception e) {
+			printStackTrace(e);
+		}
+	}
+
 }
